@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#8B6F47">
+    <title>مصمم الديكور الذكي</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root { --primary: #8B6F47; --accent: #C4A882; --bg: #FDFCF8; --card: #FFFFFF; --text: #2C2C2C; --muted: #7A7A7A; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 80px; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #6B5235 100%); color: white; padding: 20px; text-align: center; }
+        .header h1 { font-size: 22px; }
+        .tabs { display: flex; gap: 4px; padding: 8px; background: white; overflow-x: auto; }
+        .tab { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #E0D5C7; background: white; cursor: pointer; text-align: center; font-size: 12px; font-weight: 600; }
+        .tab.active { background: var(--primary); color: white; }
+        .section { background: white; border-radius: 16px; padding: 16px; margin: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .section-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--primary); }
+        .room-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .room-type { padding: 14px 4px; border-radius: 12px; border: 1.5px solid #E0D5C7; text-align: center; cursor: pointer; font-size: 12px; }
+        .room-type.active { background: var(--primary); color: white; }
+        .room-type .emoji { font-size: 24px; display: block; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border: 1.5px solid #E0D5C7; border-radius: 12px; font-size: 15px; }
+        .btn { width: calc(100% - 24px); margin: 12px; padding: 16px; border-radius: 14px; border: none; background: var(--primary); color: white; font-size: 17px; font-weight: 700; cursor: pointer; }
+        .color-palette { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .color-swatch { width: 44px; height: 44px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
+        .color-swatch.active { border-color: var(--primary); }
+        .camera-box { border: 2px dashed var(--accent); border-radius: 16px; padding: 40px; text-align: center; background: #FFF9F0; cursor: pointer; }
+        .result-card { background: white; border-radius: 16px; padding: 20px; margin: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .item-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #F0EBE3; }
+        .total { font-size: 22px; font-weight: 800; color: var(--primary); text-align: center; margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--accent); }
+        .hidden { display: none !important; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 8px; box-shadow: 0 -2px 10px rgba(0,0,0,0.08); }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--muted); cursor: pointer; }
+        .bottom-nav-item.active { color: var(--primary); }
+        .suggestion-chip { display: inline-block; padding: 8px 14px; border-radius: 20px; background: #FFF3E0; color: var(--primary); font-size: 13px; margin: 4px; }
+        .store-item { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: #FAFAFA; margin-bottom: 10px; }
+        .store-img { width: 56px; height: 56px; border-radius: 12px; background: linear-gradient(135deg, #E0D5C7, #C4A882); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .store-info { flex: 1; }
+        .store-name { font-weight: 700; }
+        .store-price { color: var(--primary); font-weight: 800; }
+        .canvas-3d { width: 100%; height: 300px; background: #1a1a2e; border-radius: 16px; margin-top: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏠 مصمم الديكور الذكي</h1>
+        <p>مدعوم بـ AI | أسعار حقيقية | عرض 3D</p>
+    </div>
+
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('design')">🎨 تصميم</div>
+        <div class="tab" onclick="switchTab('camera')">📷 AI</div>
+        <div class="tab" onclick="switchTab('stores')">🛒 متاجر</div>
+        <div class="tab" onclick="switchTab('3d')">🧊 3D</div>
+        <div class="tab" onclick="switchTab('cost')">💰 تكلفة</div>
+    </div>
+
+    <div id="tab-design" class="tab-content">
+        <div class="section">
+            <div class="section-title">🚪 نوع الغرفة</div>
+            <div class="room-types">
+                <div class="room-type active" onclick="selectRoom(this, 'living')"><span class="emoji">🛋️</span>معيشة</div>
+                <div class="room-type" onclick="selectRoom(this, 'bedroom')"><span class="emoji">🛏️</span>نوم</div>
+                <div class="room-type" onclick="selectRoom(this, 'kids')"><span class="emoji">🧸</span>أطفال</div>
+                <div class="room-type" onclick="selectRoom(this, 'guest')"><span class="emoji">🚪</span>ضيوف</div>
+                <div class="room-type" onclick="selectRoom(this, 'kitchen')"><span class="emoji">🍳</span>مطبخ</div>
+                <div class="room-type" onclick="selectRoom(this, 'office')"><span class="emoji">💻</span>مكتب</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📐 أبعاد الغرفة</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="input-group"><label>الطول (متر)</label><input type="number" id="length" placeholder="5" onchange="updateArea()"></div>
+                <div class="input-group"><label>العرض (متر)</label><input type="number" id="width" placeholder="4" onchange="updateArea()"></div>
+            </div>
+            <div style="text-align:center; margin-top:10px;">المساحة: <strong id="area-display">0</strong> م²</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🎨 الألوان</div>
+            <div class="color-palette">
+                <div class="color-swatch active" style="background:#F5F5DC;" onclick="selectColor(this, 'warm')"></div>
+                <div class="color-swatch" style="background:#E8DCC8;" onclick="selectColor(this, 'cream')"></div>
+                <div class="color-swatch" style="background:#D4C5B0;" onclick="selectColor(this, 'taupe')"></div>
+                <div class="color-swatch" style="background:#A8B5A0;" onclick="selectColor(this, 'sage')"></div>
+                <div class="color-swatch" style="background:#C5B9CD;" onclick="selectColor(this, 'lavender')"></div>
+                <div class="color-swatch" style="background:#E2BFB3;" onclick="selectColor(this, 'blush')"></div>
+            </div>
+            <div id="color-desc" style="margin-top:10px; padding:10px; background:#FFF9F0; border-radius:8px;"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">💡 الإضاءة</div>
+            <div id="lighting-suggestions"></div>
+        </div>
+    </div>
+
+    <div id="tab-camera" class="tab-content hidden">
+        <div class="section">
+            <div class="section-title">📷 تحليل AI</div>
+            <div class="camera-box" onclick="document.getElementById('fileInput').click()">
+                <div style="font-size:48px;">📸</div>
+                <p>التقط صورة للغرفة</p>
+                <input type="file" id="fileInput" accept="image/*" capture="environment" style="display:none" onchange="handleImage(event)">
+            </div>
+            <div id="imagePreview"></div>
+        </div>
+    </div>
+
+    <div id="tab-stores" class="tab-content hidden">
+        <div class="section">
+            <div class="section-title">🛒 منتجات من المتاجر</div>
+            <div id="store-results"></div>
+        </div>
+    </div>
+
+    <div id="tab-3d" class="tab-content hidden">
+        <div class="section">
+            <div class="section-title">🧊 عرض ثلاثي الأبعاد</div>
+            <canvas id="roomCanvas" class="canvas-3d"></canvas>
+        </div>
+    </div>
+
+    <div id="tab-cost" class="tab-content hidden">
+        <div class="section">
+            <div class="section-title">🌍 الدولة</div>
+            <div class="input-group">
+                <select id="country">
+                    <option value="sa">🇸🇦 السعودية</option>
+                    <option value="ae">🇦🇪 الإمارات</option>
+                    <option value="kw">🇰🇼 الكويت</option>
+                    <option value="eg">🇪🇬 مصر</option>
+                </select>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">🛋️ المفروشات</div>
+            <div id="furniture-list"></div>
+        </div>
+        <button class="btn" onclick="calculateTotal()">📊 احسب التكلفة</button>
+        <div id="cost-result" class="result-card hidden">
+            <h3>📋 التفاصيل</h3>
+            <div id="cost-items"></div>
+            <div class="total" id="total-cost">0</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="bottom-nav-item active" onclick="switchTab('design')">🎨<br>تصميم</div>
+        <div class="bottom-nav-item" onclick="switchTab('camera')">📷<br>AI</div>
+        <div class="bottom-nav-item" onclick="switchTab('stores')">🛒<br>متاجر</div>
+        <div class="bottom-nav-item" onclick="switchTab('3d')">🧊<br>3D</div>
+        <div class="bottom-nav-item" onclick="switchTab('cost')">💰<br>تكلفة</div>
+    </div>
+
+    <script>
+        const roomData = {
+            living: {
+                name: 'غرفة المعيشة',
+                furniture: [
+                    {name:'كنبة 3 مقاعد', price:2500}, {name:'كنبة 2 مقاعد', price:1800},
+                    {name:'طاولة قهوة', price:600}, {name:'سجادة', price:400},
+                    {name:'ستائر', price:800}, {name:'أباجورة', price:300},
+                    {name:'إضاءة سقفية', price:500}, {name:'طاولة تلفاز', price:900}
+                ],
+                lighting: ['💡 ثريا رئيسية','🛋️ أباجورات جانبية','✨ إضاءة LED','📺 إضاءة خلفية'],
+                colors: {warm:'بيج دافئ: يعطي إحساساً بالدفء', cream:'كريمي: لون كلاسيكي', taupe:'توب: لون عصري', sage:'أخضر مريمي: يجلب الطبيعة', lavender:'لافندر: لون ناعم', blush:'وردي باهت: لون دافئ'}
+            },
+            bedroom: {
+                name: 'غرفة النوم',
+                furniture: [
+                    {name:'سرير مزدوج', price:2000}, {name:'خزانة ملابس', price:3000},
+                    {name:'تسريحة', price:800}, {name:'كومودينو', price:600},
+                    {name:'سجادة', price:500}, {name:'ستائر blackout', price:1000},
+                    {name:'إضاءة', price:400}, {name:'أباجورة', price:250}
+                ],
+                lighting: ['🌙 إضاءة خافتة','🛏️ أباجورات','✨ إضاءة مخفية','🪞 إضاءة مرآة'],
+                colors: {warm:'بيج: يساعد على الاسترخاء', cream:'كريمي: جو هادئ', taupe:'توب: هادئ', sage:'أخضر: مهدئ للنوم', lavender:'لافندر: يساعد على النوم', blush:'وردي: رومانسي'}
+            }
+        };
+
+        const currencies = {sa:'ر.س', ae:'د.إ', kw:'د.ك', eg:'ج.م'};
+
+        let currentRoom = 'living';
+        let currentColor = 'warm';
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab, .bottom-nav-item').forEach(t => t.classList.remove('active'));
+            const idx = ['design','camera','stores','3d','cost'].indexOf(tab);
+            document.querySelectorAll('.tab')[idx]?.classList.add('active');
+            document.querySelectorAll('.bottom-nav-item')[idx]?.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById('tab-'+tab).classList.remove('hidden');
+            if(tab==='cost') renderFurniture();
+            if(tab==='stores') renderStores();
+        }
+
+        function selectRoom(el, room) {
+            document.querySelectorAll('.room-type').forEach(r => r.classList.remove('active'));
+            el.classList.add('active'); currentRoom = room;
+            updateLighting(); updateColor();
+        }
+
+        function selectColor(el, color) {
+            document.querySelectorAll('.color-swatch').forEach(c => c.classList.remove('active'));
+            el.classList.add('active'); currentColor = color; updateColor();
+        }
+
+        function updateArea() {
+            const l = parseFloat(document.getElementById('length').value)||0;
+            const w = parseFloat(document.getElementById('width').value)||0;
+            document.getElementById('area-display').textContent = (l*w).toFixed(1);
+        }
+
+        function updateLighting() {
+            document.getElementById('lighting-suggestions').innerHTML = 
+                roomData[currentRoom].lighting.map(l => `<span class="suggestion-chip">${l}</span>`).join('');
+        }
+
+        function updateColor() {
+            document.getElementById('color-desc').textContent = roomData[currentRoom].colors[currentColor];
+        }
+
+        function handleImage(e) {
+            const file = e.target.files[0];
+            if(file) {
+                const r = new FileReader();
+                r.onload = function(ev) {
+                    document.getElementById('imagePreview').innerHTML = `<img src="${ev.target.result}" style="width:100%;border-radius:12px;margin-top:10px;">`;
+                };
+                r.readAsDataURL(file);
+            }
+        }
+
+        function renderStores() {
+            const products = [
+                {name:'كنبة EKTORP', price:1899, store:'ايكيا', emoji:'🛋️'},
+                {name:'سرير MALM', price:1599, store:'ايكيا', emoji:'🛏️'},
+                {name:'سجادة STOCKHOLM', price:299, store:'ايكيا', emoji:'🧶'},
+                {name:'ثريا LED', price:349, store:'ايكيا', emoji:'💡'}
+            ];
+            document.getElementById('store-results').innerHTML = products.map(p => `
+                <div class="store-item">
+                    <div class="store-img">${p.emoji}</div>
+                    <div class="store-info"><div class="store-name">${p.name}</div><div style="font-size:12px;color:#7A7A7A;">${p.store}</div></div>
+                    <div class="store-price">${p.price} ر.س</div>
+                </div>
+            `).join('');
+        }
+
+        function renderFurniture() {
+            document.getElementById('furniture-list').innerHTML = 
+                roomData[currentRoom].furniture.map((f,i) => `
+                    <div class="item-row"><label><input type="checkbox" id="item-${i}" checked> ${f.name}</label><span>${f.price} ر.س</span></div>
+                `).join('');
+        }
+
+        function calculateTotal() {
+            const curr = currencies[document.getElementById('country').value] || 'ر.س';
+            let total = 0, html = '';
+            roomData[currentRoom].furniture.forEach((f,i) => {
+                if(document.getElementById('item-'+i)?.checked) { total += f.price; html += `<div class="item-row"><span>${f.name}</span><span>${f.price} ${curr}</span></div>`; }
+            });
+            document.getElementById('cost-items').innerHTML = html;
+            document.getElementById('total-cost').textContent = `الإجمالي: ${total.toLocaleString()} ${curr}`;
+            document.getElementById('cost-result').classList.remove('hidden');
+        }
+
+        updateLighting(); updateColor();
+    </script>
+</body>
+</html>
